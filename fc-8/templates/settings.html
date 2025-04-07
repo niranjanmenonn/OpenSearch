@@ -1,0 +1,207 @@
+{% extends "index.html" %}
+{% block content %}
+<div class="settings-page">
+    <h1>Settings</h1>
+    <div class="settings-section">
+        <h2>Appearance</h2>
+        <div class="setting-item">
+            <label for="theme-toggle-settings">Dark Mode</label>
+            <div class="toggle-switch">
+                <input type="checkbox" id="theme-toggle-settings" {% if session.get('dark_mode') == 'enabled' %}checked{% endif %}>
+                <span class="slider round"></span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="settings-section">
+        <h2>Search Preferences</h2>
+        <div class="setting-item">
+            <label for="safe-search">Safe Search</label>
+            <div class="toggle-switch">
+                <input type="checkbox" id="safe-search" checked>
+                <span class="slider round"></span>
+            </div>
+        </div>
+        <div class="setting-item">
+            <label for="results-per-page">Results Per Page</label>
+            <select id="results-per-page">
+                <option value="10">10</option>
+                <option value="20" selected>20</option>
+                <option value="30">30</option>
+                <option value="50">50</option>
+            </select>
+        </div>
+    </div>
+    
+    <div class="settings-section">
+        <h2>Privacy</h2>
+        <div class="setting-item">
+            <label for="do-not-track">Do Not Track</label>
+            <div class="toggle-switch">
+                <input type="checkbox" id="do-not-track" checked>
+                <span class="slider round"></span>
+            </div>
+        </div>
+        <div class="setting-item">
+            <label for="clear-history">Clear Search History</label>
+            <button id="clear-history" class="settings-button">Clear Now</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .settings-page {
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    body.dark-mode .settings-page {
+        background-color: #222;
+        color: #e0e0e0;
+    }
+    
+    .settings-section {
+        margin-bottom: 30px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 20px;
+    }
+    
+    body.dark-mode .settings-section {
+        border-bottom-color: #444;
+    }
+    
+    .settings-section h2 {
+        margin-bottom: 15px;
+        color: #333;
+    }
+    
+    body.dark-mode .settings-section h2 {
+        color: #ccc;
+    }
+    
+    .setting-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        padding: 10px 0;
+    }
+    
+    /* Toggle Switch Styles */
+    .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 24px;
+    }
+    
+    .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+    }
+    
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 16px;
+        width: 16px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+    }
+    
+    input:checked + .slider {
+        background-color: #4285f4;
+    }
+    
+    input:focus + .slider {
+        box-shadow: 0 0 1px #4285f4;
+    }
+    
+    input:checked + .slider:before {
+        transform: translateX(26px);
+    }
+    
+    .slider.round {
+        border-radius: 24px;
+    }
+    
+    .slider.round:before {
+        border-radius: 50%;
+    }
+    
+    .settings-button {
+        background-color: #4285f4;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    
+    .settings-button:hover {
+        background-color: #3367d6;
+    }
+    
+    select {
+        padding: 8px;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+        background-color: white;
+    }
+    
+    body.dark-mode select {
+        background-color: #333;
+        color: #e0e0e0;
+        border-color: #555;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('theme-toggle-settings');
+        const body = document.body;
+        
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            themeToggle.checked = true;
+            body.classList.add('dark-mode');
+        }
+        
+        themeToggle.addEventListener('change', function() {
+            if (this.checked) {
+                body.classList.add('dark-mode');
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                body.classList.remove('dark-mode');
+                localStorage.setItem('darkMode', 'disabled');
+            }
+        });
+        
+        // Clear history button
+        const clearHistoryBtn = document.getElementById('clear-history');
+        clearHistoryBtn.addEventListener('click', function() {
+            // Here you would add code to clear the search history
+            alert('Search history cleared!');
+        });
+    });
+</script>
+{% endblock %}

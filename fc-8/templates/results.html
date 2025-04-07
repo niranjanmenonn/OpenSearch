@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ query }} - OpenSearch Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta name="description" content="Search results for {{ query }} - OpenSearch">
+</head>
+<body class="results-page">
+    <main class="search-container">
+        <a href="{{ url_for('index') }}" class="logo">OpenSearch</a>
+        <form action="{{ url_for('final_results') }}" method="GET" class="search-form">
+            <div class="input-wrapper">
+                <input type="search" 
+                       name="query" 
+                       id="search-input" 
+                       value="{{ query }}" 
+                       autocomplete="off">
+                <button type="submit" class="search-button" aria-label="Search">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </form>
+
+        <nav class="search-nav">
+            <a href="{{ url_for('final_results', query=query) }}" class="nav-link active">All</a>
+            <a href="{{ url_for('image_results', query=query) }}" class="nav-link">Images</a>
+        </nav>
+
+        <div class="results-layout">
+            <div class="content-wrapper">
+                <div class="results-column">
+                    <div class="summary-section">
+                        <div class="summary-content">{{ summary }}</div>
+                    </div>
+
+                    <div class="results-section">
+                        <h3>Web Results</h3>
+                        {% if error %}
+                            <div class="error-container">
+                                <div class="error-icon">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                </div>
+                                <h2>Connection Error</h2>
+                                <p class="error-message">{{ error }}</p>
+                                <div class="error-suggestions">
+                                    <h3>Suggestions:</h3>
+                                    <ul>
+                                        <li>Check your internet connection</li>
+                                        <li>Try refreshing the page</li>
+                                        <li>Try your search again in a few minutes</li>
+                                    </ul>
+                                </div>
+                                <a href="{{ url_for('index') }}" class="retry-button">
+                                    <i class="fas fa-search"></i>
+                                    Try Another Search
+                                </a>
+                            </div>
+                        {% elif results %}
+                            {% for result in results %}
+                            <div class="search-result">
+                                <a href="{{ result.link }}" class="result-title" target="_blank" rel="noopener">{{ result.title }}</a>
+                                <div class="result-url">{{ result.domain }}</div>
+                                <div class="result-snippet">{{ result.snippet }}</div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="no-results">
+                                <div class="no-results-icon">
+                                    <i class="fas fa-search"></i>
+                                </div>
+                                <h2>No Results Found</h2>
+                                <p>We couldn't find any results for "{{ query }}"</p>
+                                <div class="search-suggestions">
+                                    <h3>Search Suggestions:</h3>
+                                    <ul>
+                                        <li>Check your spelling</li>
+                                        <li>Try more general keywords</li>
+                                        <li>Try different keywords</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if concept_map %}
+                <div class="concept-map-column">
+                    <div class="concept-map">
+                        <h3>Concept Map</h3>
+                        <img src="{{ url_for('static', filename=concept_map) }}" alt="Concept map for {{ query }}">
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+
+    <style>
+        .content-wrapper {
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+            justify-content: space-between;
+        }
+
+        .results-column {
+            flex: 1;
+            min-width: 0;
+            order: 1;
+        }
+
+        .concept-map-column {
+            width: 45%;
+            position: sticky;
+            top: 2rem;
+            order: 2;
+        }
+
+        .media-section {
+            margin-bottom: 2rem;
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .media-section h3 {
+            margin-bottom: 1rem;
+            color: var(--os-text);
+            font-size: 1.2rem;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .video-item {
+            background: var(--os-input-bg);
+            border-radius: 8px;
+            padding: 1rem;
+            transition: transform 0.2s;
+        }
+
+        .video-item:hover {
+            transform: translateY(-2px);
+        }
+
+        .video-title {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--os-link);
+        }
+
+        .concept-map {
+            margin-top: 0;
+            padding: 1rem;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .concept-map h3 {
+            margin-bottom: 1rem;
+            color: var(--os-text);
+            font-size: 1.2rem;
+        }
+
+        .concept-map img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+
+        .results-layout {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        @media (max-width: 1024px) {
+            .content-wrapper {
+                flex-direction: column;
+            }
+
+            .concept-map-column {
+                width: 100%;
+                position: static;
+                order: 2;
+            }
+
+            .results-column {
+                order: 1;
+            }
+
+            .video-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+        }
+
+        .search-nav {
+            display: flex;
+            gap: 2rem;
+            margin: 0.5rem 0 2rem;
+            padding: 0 1rem;
+            border-bottom: 1px solid var(--os-input-border);
+        }
+
+        .nav-link {
+            color: var(--os-text);
+            text-decoration: none;
+            padding: 0.5rem 0;
+            position: relative;
+            font-size: 0.9rem;
+        }
+
+        .nav-link.active {
+            color: var(--os-primary);
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: var(--os-primary);
+        }
+
+        .nav-link:hover {
+            color: var(--os-primary);
+        }
+    </style>
+</body>
+</html>
